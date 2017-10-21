@@ -1,4 +1,4 @@
-package main
+package src
 
 import (
 	"github.com/robertkrimen/otto/ast"
@@ -24,7 +24,7 @@ type (
 	}
 )
 
-func (m *Module) Dfs() bool {
+func (m *Module) hasCycle() bool {
 	if (m.visited) {
 		return true
 	}

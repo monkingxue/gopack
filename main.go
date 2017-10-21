@@ -1,8 +1,7 @@
 package main
 
-import (
-)
+import "github.com/monkingxue/gopack/src"
 
 func main(){
-	CreateModule("a", "var a = require('b'); var c = require('b')")
+	src.CreateModule("a", "var a = require('b'); var c = require('b')")
 }
