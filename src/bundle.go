@@ -10,11 +10,11 @@ type Bundle struct {
 	destPath  string
 }
 
-var LoadModules = make(map[string]*Module)
+var loadModules = make(map[string]*Module)
 var loadPaths []string
 
 func (b *Bundle) checkCycle() {
-	if HasCycle(LoadModules[b.entryPath]) {
+	if HasCycle(loadModules[b.entryPath]) {
 		panic("存在循环调用！")
 	}
 }
@@ -22,8 +22,7 @@ func (b *Bundle) checkCycle() {
 func (b *Bundle) fetchModule() {
 	loadPaths = append(loadPaths, b.entryPath)
 
-	var i = 0
-	var pathCnt = len(loadPaths)
+	i, pathCnt := 0, len(loadPaths)
 
 	for ; i != pathCnt; i += 1 {
 
@@ -32,13 +31,11 @@ func (b *Bundle) fetchModule() {
 			panic(err)
 		}
 
-		var imports []string
-		var newModule = new(Module)
-		*(newModule), imports = CreateModule(loadPaths[i], string(source))
-		LoadModules [loadPaths[i]] = newModule
+		module, imports := CreateModule(loadPaths[i], string(source))
+		loadModules [loadPaths[i]] = &module
 
-		for _, name := range imports {
-			loadPaths = append(loadPaths, util.ResolvePath(b.entryPath, name))
+		for _, path := range imports {
+			loadPaths = append(loadPaths, util.ResolvePath(module.Path, path))
 		}
 		pathCnt = len(loadPaths)
 	}
@@ -49,9 +46,9 @@ func (b *Bundle) deconflict() {
 }
 
 func (b *Bundle) generate() string {
-	var out = ""
+	out := ""
 
-	for _, m := range LoadModules {
+	for _, m := range loadModules {
 		out += m.Code + "\n"
 	}
 
@@ -65,7 +62,7 @@ func (b *Bundle) Build(entryPath string, destPath string) string {
 	b.entryPath = entryPath
 	b.destPath = destPath
 	b.fetchModule()
-	//b.checkCycle()
+	b.checkCycle()
 	b.deconflict()
 	return b.generate()
 }
