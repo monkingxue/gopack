@@ -5,7 +5,6 @@ import (
 	"github.com/robertkrimen/otto/parser"
 	"github.com/robertkrimen/otto/file"
 	"log"
-	"fmt"
 )
 
 type (
@@ -14,6 +13,7 @@ type (
 		code    string
 		ast     *ast.Program
 		imports []string
+		visited bool
 	}
 
 	moduleWalker struct {
@@ -22,6 +22,20 @@ type (
 		shift   file.Idx
 	}
 )
+
+func (m *Module) Dfs() bool {
+	if (m.visited) {
+		return true
+	}
+	m.visited = true
+	for _, v := range m.imports {
+		if (v.Dfs()) {
+			return true
+		}
+	}
+	m.visited = false
+	return false
+}
 
 func CreateModule(path string, code string) Module {
 	program, err := parser.ParseFile(nil, "", code, 0)
