@@ -24,13 +24,13 @@ type (
 	}
 )
 
-func (m *Module) hasCycle() bool {
-	if (m.visited) {
+func HasCycle(m *Module) bool {
+	if m.visited {
 		return true
 	}
 	m.visited = true
 	for _, v := range m.imports {
-		if (v.Dfs()) {
+		if HasCycle(LoadModules[v]) {
 			return true
 		}
 	}
@@ -39,6 +39,10 @@ func (m *Module) hasCycle() bool {
 }
 
 func CreateModule(path string, code string) Module {
+	if LoadModules[path] != nil {
+		return *LoadModules[path]
+	}
+
 	program, err := parser.ParseFile(nil, "", code, 0)
 	if err != nil {
 		log.Fatal("Error parse code")
@@ -53,13 +57,11 @@ func CreateModule(path string, code string) Module {
 }
 
 func (m *moduleWalker) Enter(n ast.Node) ast.Visitor {
-
 	if cc, ok := n.(*ast.CallExpression); ok && cc != nil {
 		if cc.Callee.(*ast.Identifier).Name == "require" {
 			m.imports = append(m.imports, cc.ArgumentList[0].(*ast.StringLiteral).Value)
 		}
 	}
-
 	return m
 }
 
