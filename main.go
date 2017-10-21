@@ -1,9 +1,8 @@
 package main
 
 import (
-	"fmt"
 )
 
 func main(){
-	fmt.Printf("Hello, Go!")
+	CreateModule("a", "var a = require('b'); var c = require('b')")
 }
