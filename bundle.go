@@ -1,4 +1,4 @@
-package frame
+package main
 
 type Bundle struct {
 
