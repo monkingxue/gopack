@@ -1,4 +1,4 @@
-package src
+package optimize
 
 type (
 	Scope struct {
