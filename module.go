@@ -12,6 +12,7 @@ type (
 		imports map[string]*Module
 		exports map[string]*Module
 		visited bool
+		added   bool
 	}
 )
 
