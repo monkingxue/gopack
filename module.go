@@ -9,7 +9,7 @@ type (
 		path    string
 		code    string
 		ast     *ast.Program
-		imports *map[int]string
-		exports *map[int]string
+		imports *map[string]*Module
+		exports *map[string]*Module
 	}
 )
