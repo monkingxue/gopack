@@ -14,6 +14,7 @@ type (
 		ast     *ast.Program
 		imports []string
 		visited bool
+		added   bool
 	}
 
 	moduleWalker struct {
