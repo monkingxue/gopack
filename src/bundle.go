@@ -2,6 +2,7 @@ package src
 
 import (
 	"io/ioutil"
+	"github.com/gopack/util"
 )
 
 type Bundle struct {
@@ -18,36 +19,29 @@ func (b *Bundle) checkCycle() {
 	}
 }
 
-func (b *Bundle) FetchModule() {
-	source, err := ioutil.ReadFile(b.entryPath)
-	if err != nil {
-		panic(err)
-	}
-	CreateModule(b.entryPath, string(source))
-}
-
-func (b *Bundle) FetchModule2() {
+func (b *Bundle) fetchModule() {
 	loadPaths = append(loadPaths, b.entryPath)
+
 	var i = 0
 	var pathCnt = len(loadPaths)
 
 	for ; i != pathCnt; i += 1 {
-		if module, exists := LoadModules[loadPaths[i]]; !exists {
-			source, err := ioutil.ReadFile(loadPaths[i])
-			if err != nil {
-				panic(err)
-			}
-			var module = CreateModule(loadPaths[i], string(source))
-			LoadModules [loadPaths[i]] = &module
-		} else {
-			for _, path := range module.imports {
-				//todo 如果有筛选path
-				loadPaths = append(loadPaths, path)
-			}
+
+		source, err := ioutil.ReadFile(loadPaths[i])
+		if err != nil {
+			panic(err)
+		}
+
+		var imports []string
+		var newModule = new(Module)
+		*(newModule), imports = CreateModule(loadPaths[i], string(source))
+		LoadModules [loadPaths[i]] = newModule
+
+		for _, name := range imports {
+			loadPaths = append(loadPaths, util.ResolvePath(b.entryPath, name))
 		}
 		pathCnt = len(loadPaths)
 	}
-
 }
 
 func (b *Bundle) deconflict() {
@@ -56,19 +50,22 @@ func (b *Bundle) deconflict() {
 
 func (b *Bundle) generate() string {
 	var out = ""
-	var m = LoadModules[b.entryPath]
-	out = m.catCode(out)
 
-	const intro = `(function () { 'use strict';\n\n\t`
-	const outro = `\n\n})();`
+	for _, m := range LoadModules {
+		out += m.Code + "\n"
+	}
+
+	const intro = "(function () { 'use strict';\n\n\t"
+	const outro = "\n\n})();"
 
 	return intro + out + outro
 }
 
-func (b *Bundle) Build() {
-	b.FetchModule()
-
-	b.checkCycle()
+func (b *Bundle) Build(entryPath string, destPath string) string {
+	b.entryPath = entryPath
+	b.destPath = destPath
+	b.fetchModule()
+	//b.checkCycle()
 	b.deconflict()
-	b.generate()
+	return b.generate()
 }
