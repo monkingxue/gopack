@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/monkingxue/gopack/src"
+	"github.com/gopack/src"
 	"fmt"
 )
 
