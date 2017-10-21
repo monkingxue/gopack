@@ -12,13 +12,13 @@ type Bundle struct {
 var LoadModules = make(map[string]*Module)
 var loadPaths []string
 
-func (b *Bundle)checkCycle() {
-	if (LoadModules[b.entryPath].Dfs()) {
+func (b *Bundle) checkCycle() {
+	if HasCycle(LoadModules[b.entryPath]) {
 		panic("存在循环调用！")
 	}
 }
 
-func (b *Bundle)FetchModule() {
+func (b *Bundle) FetchModule() {
 	source, err := ioutil.ReadFile(b.entryPath)
 	if err != nil {
 		panic(err)
@@ -26,7 +26,7 @@ func (b *Bundle)FetchModule() {
 	CreateModule(b.entryPath, string(source))
 }
 
-func (b *Bundle)FetchModule2() {
+func (b *Bundle) FetchModule2() {
 	loadPaths = append(loadPaths, b.entryPath)
 	var i = 0
 	var pathCnt = len(loadPaths)
@@ -49,15 +49,14 @@ func (b *Bundle)FetchModule2() {
 
 }
 
-func (b *Bundle)deconflict() {
+func (b *Bundle) deconflict() {
 	//得到一个bundle和一堆预处理好的modules，解决重复、冲突与循环依赖
 }
 
-func (b *Bundle)generate() string {
+func (b *Bundle) generate() string {
 	var out string
 
 	//todo 生成代码
-
 
 	const intro = `(function () { 'use strict';\n\n\t`
 	const outro = `\n\n})();`
@@ -65,7 +64,7 @@ func (b *Bundle)generate() string {
 	return intro + out + outro
 }
 
-func (b *Bundle)Build() {
+func (b *Bundle) Build() {
 	b.FetchModule()
 
 	b.checkCycle()
