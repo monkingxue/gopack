@@ -37,9 +37,10 @@ func (b *Bundle) FetchModule2() {
 			if err != nil {
 				panic(err)
 			}
-			LoadModules[loadPaths[i]] = CreateModule(loadPaths[i], string(source))
+			var module = CreateModule(loadPaths[i], string(source))
+			LoadModules [loadPaths[i]] = &module
 		} else {
-			for path, _ := range module.imports {
+			for _, path := range module.imports {
 				//todo 如果有筛选path
 				loadPaths = append(loadPaths, path)
 			}
@@ -54,9 +55,9 @@ func (b *Bundle) deconflict() {
 }
 
 func (b *Bundle) generate() string {
-	var out string
-
-	//todo 生成代码
+	var out = ""
+	var m = LoadModules[b.entryPath]
+	out = m.catCode(out)
 
 	const intro = `(function () { 'use strict';\n\n\t`
 	const outro = `\n\n})();`

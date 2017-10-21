@@ -38,6 +38,15 @@ func HasCycle(m *Module) bool {
 	return false
 }
 
+func (m *Module) catCode(in string) string {
+	m.visited = true
+	for _, v := range m.imports {
+		LoadModules[v].catCode(in)
+	}
+	var out = m.code + in
+	return out
+}
+
 func CreateModule(path string, code string) Module {
 	if LoadModules[path] != nil {
 		return *LoadModules[path]
