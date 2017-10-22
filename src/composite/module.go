@@ -29,8 +29,8 @@ func HasCycle(m *Module) bool {
 		return true
 	}
 	m.visited = true
-	for _, path := range m.imports {
-		if HasCycle(loadModules[util.ResolvePath(m.Path, path)]) {
+	for _, mpath := range m.imports {
+		if HasCycle(loadModules[util.ResolvePath(RootPath, m.Path, mpath)]) {
 			return true
 		}
 	}

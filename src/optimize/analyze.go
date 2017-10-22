@@ -8,7 +8,7 @@ import (
 )
 
 type (
-	OpBlock struct {
+	OptimizeStatement struct {
 		Node      OpNode
 		Defines   map[string]bool
 		Modifies  map[string]bool
@@ -26,14 +26,18 @@ type (
 
 	Analyze struct {
 		Scope        Scope
-		TopStatement OpBlock
+		TopStatement OptimizeStatement
 	}
 
 	AnalyzeWalker struct {
-		source  string
-		shift   file.Idx
+		source string
+		shift  file.Idx
 	}
 )
+
+func (*OptimizeStatement) _statementNode()     {}
+func (self *OptimizeStatement) Idx0() file.Idx { return self.Node.Node.Idx0() }
+func (self *OptimizeStatement) Idx1() file.Idx { return self.Node.Node.Idx1() }
 
 var gal = Analyze{Scope: *new(Scope)}
 
@@ -45,26 +49,33 @@ func addToScope(name string, hoist bool) {
 	}
 }
 
-func analyze(ast *ast.Program, code string, module *cp.Module) {
-	var opList []OpBlock
-	for _, statement := range ast.Body {
-		opItem := OpBlock{
+func analyze(program *ast.Program, code string, module *cp.Module) {
+	for i, statement := range program.Body {
+		opStatement := OptimizeStatement{
 			Node:   OpNode{Node: statement},
 			Module: module,
 			Margin: [2]file.Idx{0, 0},
 			Source: code,
 		}
-
-		opList = append(opList, opItem)
 	}
 
+	w := &AnalyzeWalker{source: code}
 
+	ast.Walk(w, opList)
 }
 
-func (aw *AnalyzeWalker)  Enter(n ast.Node) ast.Visitor {
+func (aw *AnalyzeWalker) Enter(n ast.Node) ast.Visitor {
 
 	switch n := n.(type) {
-	case *ast.FunctionLiteral :
+	case *ast.FunctionLiteral:
+		addToScope(n.Name.Name, false)
+	}
+}
+
+func (aw *AnalyzeWalker) Exit(n ast.Node) {
+
+	switch n := n.(type) {
+	case *ast.FunctionLiteral:
 		addToScope(n.Name.Name, false)
 	}
 }

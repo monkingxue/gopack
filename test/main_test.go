@@ -7,5 +7,5 @@ import (
 
 func TestName(t *testing.T) {
 	var b composite.Bundle
-	b.Build("/Users/qyh/go/src/github.com/monkingxue/gopack/test/")
+	b.Build("/Users/xueyingchen/Desktop/learn-one/go/src/github.com/monkingxue/gopack/test/")
 }

@@ -14,6 +14,8 @@ type Bundle struct {
 	out       string
 }
 
+var RootPath string
+
 var loadModules = make(map[string]*Module)
 var loadPaths []string
 
@@ -39,7 +41,7 @@ func (b *Bundle) fetchModule() {
 		loadModules [loadPaths[i]] = &module
 
 		for _, path := range imports {
-			loadPaths = append(loadPaths, util.ResolvePath(module.Path, path))
+			loadPaths = append(loadPaths, util.ResolvePath(RootPath, module.Path, path))
 		}
 		pathCnt = len(loadPaths)
 	}
@@ -79,8 +81,9 @@ func (b *Bundle) postProc() {
 	}
 }
 
-func (b *Bundle) Build(p string) {
-	b.config.GetConfig(path.Join(p, "gpconfig.json"))
+func (b *Bundle) Build(rootPath string) {
+	b.config.GetConfig(path.Join(rootPath, "gpconfig.json"))
+	RootPath = rootPath
 	b.entryPath = b.config.Entry
 	b.destPath = b.config.Dest
 	b.fetchModule()
