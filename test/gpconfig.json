@@ -1,6 +1,6 @@
 {
-  "Entry": "/Users/xueyingchen/Desktop/learn-one/go/src/github.com/monkingxue/gopack/test/index.js",
-  "Dest": "/Users/xueyingchen/Desktop/learn-one/go/src/github.com/monkingxue/gopack/test/dest/",
+  "Entry": "/Users/qyh/go/src/github.com/monkingxue/gopack/test/index.js",
+  "Dest": "/Users/qyh/go/src/github.com/monkingxue/gopack/test/dest/",
   "Cleanup": true,
   "Format": "iife",
   "Chunk": "bundle",
