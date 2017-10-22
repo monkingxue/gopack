@@ -4,6 +4,7 @@ import (
 	"github.com/robertkrimen/otto/ast"
 	"github.com/robertkrimen/otto/parser"
 	"github.com/robertkrimen/otto/file"
+	"github.com/gopack/util"
 )
 
 type (
@@ -28,8 +29,8 @@ func HasCycle(m *Module) bool {
 		return true
 	}
 	m.visited = true
-	for _, v := range m.imports {
-		if HasCycle(LoadModules[v]) {
+	for _, path := range m.imports {
+		if HasCycle(loadModules[util.ResolvePath(m.Path, path)]) {
 			return true
 		}
 	}
@@ -38,8 +39,8 @@ func HasCycle(m *Module) bool {
 }
 
 func CreateModule(path string, code string) (Module, []string) {
-	if LoadModules[path] != nil {
-		return *LoadModules[path], []string{}
+	if loadModules[path] != nil {
+		return *loadModules[path], []string{}
 	}
 
 	program, err := parser.ParseFile(nil, "", code, 0)
@@ -74,7 +75,7 @@ func (mw *moduleWalker) Enter(n ast.Node) ast.Visitor {
 						if id.Name == "require" {
 							path := cc.ArgumentList[0].(*ast.StringLiteral).Value
 							mw.delCol = append(mw.delCol, []file.Idx{stateStart, stateEnd})
-							if LoadModules[path] == nil {
+							if loadModules[path] == nil {
 								mw.imports = append(mw.imports, path)
 							}
 						}
