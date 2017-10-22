@@ -1,0 +1,8 @@
+{
+  "Entry": "/Users/qyh/go/src/github.com/monkingxue/gopack/test/main.js",
+  "Dest": "/Users/qyh/go/src/github.com/monkingxue/gopack/test/dest/",
+  "Cleanup": true,
+  "Format": "iife",
+  "Chunk": "bundle",
+  "Log": true
+}

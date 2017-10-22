@@ -2,12 +2,16 @@ package composite
 
 import (
 	"io/ioutil"
-	"github.com/gopack/util"
+	"github.com/monkingxue/gopack/src/util"
+	"path"
+	"os"
 )
 
 type Bundle struct {
 	entryPath string
 	destPath  string
+	config    util.Config
+	out       string
 }
 
 var loadModules = make(map[string]*Module)
@@ -42,27 +46,45 @@ func (b *Bundle) fetchModule() {
 }
 
 func (b *Bundle) deconflict() {
-	//得到一个bundle和一堆预处理好的modules，解决重复、冲突与循环依赖
+	b.checkCycle()
 }
 
 func (b *Bundle) generate() string {
-	out := ""
 
 	for _, m := range loadModules {
-		out += m.Code + "\n"
+		b.out += m.Code + "\n"
 	}
 
 	const intro = "(function () { 'use strict';\n\n\t"
 	const outro = "\n\n})();"
 
-	return intro + out + outro
+	return intro + b.out + outro
 }
 
-func (b *Bundle) Build(entryPath string, destPath string) string {
-	b.entryPath = entryPath
-	b.destPath = destPath
+func (b *Bundle) postProc() {
+	if (b.config.Cleanup) {
+		os.Remove(b.config.Dest)
+	}
+
+	os.Mkdir(b.config.Dest, 0777)
+
+	out, err := os.OpenFile(path.Join(b.config.Dest, b.config.Chunk+".js"), os.O_RDWR|os.O_CREATE, 0777);
+	if err != nil {
+		panic(err)
+	}
+	out.WriteString(b.out)
+	out.Close()
+	if (b.config.Log) {
+		println(b.out)
+	}
+}
+
+func (b *Bundle) Build(p string) {
+	b.config.GetConfig(path.Join(p, "gpconfig.json"))
+	b.entryPath = b.config.Entry
+	b.destPath = b.config.Dest
 	b.fetchModule()
-	b.checkCycle()
 	b.deconflict()
-	return b.generate()
+	b.generate()
+	b.postProc()
 }

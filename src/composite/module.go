@@ -4,7 +4,7 @@ import (
 	"github.com/robertkrimen/otto/ast"
 	"github.com/robertkrimen/otto/parser"
 	"github.com/robertkrimen/otto/file"
-	"github.com/gopack/util"
+	"github.com/monkingxue/gopack/src/util"
 )
 
 type (

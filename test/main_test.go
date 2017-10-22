@@ -2,10 +2,10 @@ package test
 
 import (
 	"testing"
-	"github.com/monkingxue/gopack/src"
+	"github.com/monkingxue/gopack/src/composite"
 )
 
 func TestName(t *testing.T) {
-	var b src.Bundle
-	println(b.Build("/Users/qyh/go/src/github.com/gopack/test/main.js","/Users/qyh/go/src/github.com/gopack/dest/"))
+	var b composite.Bundle
+	b.Build("/Users/qyh/go/src/github.com/monkingxue/gopack/test/")
 }
