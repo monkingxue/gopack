@@ -1,4 +1,4 @@
-package src
+package composite
 
 import (
 	"io/ioutil"

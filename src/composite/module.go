@@ -1,4 +1,4 @@
-package src
+package composite
 
 import (
 	"github.com/robertkrimen/otto/ast"

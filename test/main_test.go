@@ -2,7 +2,7 @@ package test
 
 import (
 	"testing"
-	"github.com/gopack/src"
+	"github.com/monkingxue/gopack/src"
 )
 
 func TestName(t *testing.T) {

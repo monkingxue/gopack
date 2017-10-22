@@ -1,12 +1,12 @@
 package main
 
 import (
-	"github.com/monkingxue/gopack/src"
+	cp "github.com/monkingxue/gopack/src/composite"
 	"fmt"
 )
 
 func main(){
-	m, l := src.CreateModule("a", `
+	m, l := cp.CreateModule("a", `
 	var a = require('b');
 	var d = 1;
 	var c = require('d');
